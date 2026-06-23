@@ -1,0 +1,13 @@
+{
+  "name": "@eve-memory/adapter-pg",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Postgres adapter for eve-memory (deferred — Quest 2)",
+  "repository": {
+    "type": "git",
+    "url": "<PLACEHOLDER>",
+    "directory": "packages/adapter-pg"
+  }
+}

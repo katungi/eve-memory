@@ -37,15 +37,12 @@
     "removeComments": false,
     "plugins": [{ "name": "@effect/language-service" }],
     "paths": {
-      "@template/cli": ["./packages/cli/src/index.js"],
-      "@template/cli/*": ["./packages/cli/src/*.js"],
-      "@template/cli/test/*": ["./packages/cli/test/*.js"],
-      "@template/domain": ["./packages/domain/src/index.js"],
-      "@template/domain/*": ["./packages/domain/src/*.js"],
-      "@template/domain/test/*": ["./packages/domain/test/*.js"],
-      "@template/server": ["./packages/server/src/index.js"],
-      "@template/server/*": ["./packages/server/src/*.js"],
-      "@template/server/test/*": ["./packages/server/test/*.js"]
+      "@eve-memory/cli": ["./packages/cli/src/bin.js"],
+      "@eve-memory/cli/*": ["./packages/cli/src/*.js"],
+      "@eve-memory/cli/test/*": ["./packages/cli/test/*.js"],
+      "eve-memory": ["./packages/core/src/index.js"],
+      "eve-memory/*": ["./packages/core/src/*.js"],
+      "eve-memory/test/*": ["./packages/core/test/*.js"]
     }
   }
 }

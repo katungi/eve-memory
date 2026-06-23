@@ -1,20 +1,19 @@
 {
-  "name": "@template/cli",
+  "name": "@eve-memory/cli",
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "The CLI template",
+  "description": "Codegen CLI for eve-memory",
   "repository": {
     "type": "git",
     "url": "<PLACEHOLDER>",
     "directory": "packages/cli"
   },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
+  "bin": {
+    "eve-memory": "./dist/esm/bin.js"
   },
   "scripts": {
-    "dev": "tsx --watch src/server.ts",
     "codegen": "build-utils prepare-v2",
     "build": "pnpm build-esm && pnpm build-annotate && pnpm build-cjs && build-utils pack-v2",
     "build-esm": "tsc -b tsconfig.build.json",
@@ -28,26 +27,7 @@
     "@effect/cli": "latest",
     "@effect/platform": "latest",
     "@effect/platform-node": "latest",
-    "@template/domain": "workspace:^",
-    "effect": "latest"
-  },
-  "devDependencies": {
-    "@effect/cli": "latest",
-    "@effect/platform": "latest",
-    "@effect/platform-node": "latest",
-    "@template/domain": "workspace:^",
-    "effect": "latest"
-  },
-  "effect": {
-    "generateExports": {
-      "include": [
-        "**/*.ts"
-      ]
-    },
-    "generateIndex": {
-      "include": [
-        "**/*.ts"
-      ]
-    }
+    "effect": "catalog:",
+    "eve-memory": "workspace:*"
   }
 }

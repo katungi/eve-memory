@@ -1,13 +1,13 @@
 {
-  "name": "@template/domain",
-  "version": "0.0.0",
+  "name": "eve-memory",
+  "version": "0.0.1", 
   "type": "module",
   "license": "MIT",
-  "description": "The domain template",
+  "description": "Cross-session memory layer for the Vercel eve agent framework",
   "repository": {
     "type": "git",
     "url": "<PLACEHOLDER>",
-    "directory": "packages/domain"
+    "directory": "packages/core"
   },
   "publishConfig": {
     "access": "public",
@@ -24,20 +24,28 @@
     "coverage": "vitest --coverage"
   },
   "dependencies": {
-    "@effect/platform": "latest",
-    "@effect/sql": "latest",
-    "effect": "latest"
+    "effect": "catalog:"
+  },
+  "peerDependencies": {
+    "eve": ">=0.13.0",
+    "zod": "^3 || ^4"
   },
   "effect": {
     "generateExports": {
-      "include": [
-        "**/*.ts"
-      ]
+      "include": ["adapters.ts"]
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
     },
-    "generateIndex": {
-      "include": [
-        "**/*.ts"
-      ]
+    "./adapters": {
+      "types": "./dist/dts/adapters.d.ts",
+      "import": "./dist/esm/adapters.js",
+      "default": "./dist/cjs/adapters.js"
     }
   }
 }

@@ -1,2 +1,7 @@
 packages:
   - packages/*
+
+catalog:
+  effect: ^3.10.7
+  typescript: ^5.6.3
+  vitest: ^3.2.0

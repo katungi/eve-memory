@@ -1,40 +1,16 @@
-import { Args, Command, Options } from "@effect/cli"
-import { TodoId } from "@template/domain/TodosApi"
-import { TodosClient } from "./TodosClient.js"
+import { Command } from "@effect/cli"
+import { runInit } from "./codegen/init.js"
 
-const todoArg = Args.text({ name: "todo" }).pipe(
-  Args.withDescription("The message associated with a todo")
+const init = Command.make("init").pipe(
+  Command.withDescription("Initialize eve-memory in an eve agent project"),
+  Command.withHandler(() => runInit())
 )
 
-const todoId = Options.withSchema(Options.integer("id"), TodoId).pipe(
-  Options.withDescription("The identifier of the todo")
+const root = Command.make("eve-memory").pipe(
+  Command.withSubcommands([init])
 )
 
-const add = Command.make("add", { todo: todoArg }).pipe(
-  Command.withDescription("Add a new todo"),
-  Command.withHandler(({ todo }) => TodosClient.create(todo))
-)
-
-const done = Command.make("done", { id: todoId }).pipe(
-  Command.withDescription("Mark a todo as done"),
-  Command.withHandler(({ id }) => TodosClient.complete(id))
-)
-
-const list = Command.make("list").pipe(
-  Command.withDescription("List all todos"),
-  Command.withHandler(() => TodosClient.list)
-)
-
-const remove = Command.make("remove", { id: todoId }).pipe(
-  Command.withDescription("Remove a todo"),
-  Command.withHandler(({ id }) => TodosClient.remove(id))
-)
-
-const command = Command.make("todo").pipe(
-  Command.withSubcommands([add, done, list, remove])
-)
-
-export const cli = Command.run(command, {
-  name: "Todo CLI",
+export const cli = Command.run(root, {
+  name: "eve-memory",
   version: "0.0.0"
 })
