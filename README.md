@@ -132,7 +132,7 @@ export default defineHook({
 });
 ```
 
-> Or generate all four files at once: `npx eve-memory-cli init` (options: `--dir`, `--embedder gateway|stub`, `--model`, `--force`). Existing files are never overwritten without `--force`.
+> Or generate all four files at once: `npx eve-memory init` (options: `--dir`, `--embedder gateway|stub`, `--model`, `--force`). Existing files are never overwritten without `--force`.
 
 ## The imperative API
 
@@ -210,9 +210,8 @@ This is a pnpm + Effect monorepo:
 
 ```
 packages/
-├── core/        →  `eve-memory` (services, adapters, defineMemory)
-├── adapter-pg/  →  `eve-memory-pg` (Postgres/pgvector adapter)
-└── cli/         →  `eve-memory-cli` (the `init` codegen)
+├── core/        →  `eve-memory` (services, adapters, defineMemory, `init` codegen bin)
+└── adapter-pg/  →  `eve-memory-pg` (Postgres/pgvector adapter)
 ```
 
 ```bash
@@ -227,7 +226,7 @@ pnpm typecheck
 - [x] Core services, in-memory adapter, Promise API, eve wiring
 - [x] Validation against eve's published types (`SessionAuth`, contexts, events) + identity diagnostics
 - [x] Real embedder (`gatewayEmbedder` via the AI SDK / AI Gateway)
-- [x] `npx eve-memory-cli init` codegen
+- [x] `npx eve-memory init` codegen
 - [x] Postgres/pgvector adapter (`eve-memory-pg`, tested against real pgvector SQL via PGlite)
 - [ ] Publish `0.1.0`
 - [ ] Smoke test against a deployed eve agent

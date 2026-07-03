@@ -6,7 +6,7 @@
   "description": "Postgres/pgvector storage adapter for eve-memory",
   "repository": {
     "type": "git",
-    "url": "<PLACEHOLDER>",
+    "url": "git+https://github.com/katungi/eve-memory.git",
     "directory": "packages/adapter-pg"
   },
   "publishConfig": {

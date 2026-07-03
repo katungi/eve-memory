@@ -6,12 +6,16 @@
   "description": "Cross-session memory layer for the Vercel eve agent framework",
   "repository": {
     "type": "git",
-    "url": "<PLACEHOLDER>",
+    "url": "git+https://github.com/katungi/eve-memory.git",
     "directory": "packages/core"
   },
   "publishConfig": {
     "access": "public",
-    "directory": "dist"
+    "directory": "dist",
+    "executableFiles": ["./dist/esm/bin.js"]
+  },
+  "bin": {
+    "eve-memory": "./dist/esm/bin.js"
   },
   "scripts": {
     "codegen": "build-utils prepare-v2",

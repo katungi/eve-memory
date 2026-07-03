@@ -12,6 +12,5 @@ const project = (
 
 export default defineWorkspace([
   "packages/adapter-pg",
-  "packages/cli",
   "packages/core"
 ])

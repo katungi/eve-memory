@@ -1,8 +1,8 @@
-/** codegen/init — eve-memory init scaffolding generator */
+/** cli/init — `eve-memory init` scaffolding generator (zero deps beyond effect) */
 
-import { FileSystem, Path } from "@effect/platform"
-import type { PlatformError } from "@effect/platform/Error"
 import { Effect } from "effect"
+import * as fs from "node:fs/promises"
+import * as path from "node:path"
 
 export interface InitOptions {
   /** Agent directory to generate into (eve convention: "agent"). */
@@ -25,6 +25,7 @@ import { ${embedderImport}, inMemoryAdapter } from "eve-memory/adapters";
 export default defineMemory({
   // Swap for a persistent adapter before production — in-memory state
   // does not survive process restarts or serverless cold starts.
+  // See eve-memory-pg for the Postgres/pgvector adapter.
   adapter: inMemoryAdapter(),
   embedder: ${embedder},
   semanticRecall: { topK: 5, scope: "resource" },
@@ -83,20 +84,22 @@ const templates = (options: InitOptions): ReadonlyArray<{ path: string; content:
   { path: "hooks/memory.ts", content: hooksTs }
 ]
 
-export const runInit = (
-  options: InitOptions
-): Effect.Effect<void, PlatformError, FileSystem.FileSystem | Path.Path> =>
+const fileExists = (target: string) =>
+  Effect.promise(() => fs.access(target).then(() => true, () => false))
+
+/** Filesystem failures are defects here: this only runs from the one-shot bin. */
+export const runInit = (options: InitOptions): Effect.Effect<void> =>
   Effect.gen(function*() {
-    const fs = yield* FileSystem.FileSystem
-    const path = yield* Path.Path
     for (const file of templates(options)) {
       const target = path.join(options.dir, file.path)
-      if (!options.force && (yield* fs.exists(target))) {
+      if (!options.force && (yield* fileExists(target))) {
         yield* Effect.log(`skipped ${target} (already exists)`)
         continue
       }
-      yield* fs.makeDirectory(path.dirname(target), { recursive: true })
-      yield* fs.writeFileString(target, file.content)
+      yield* Effect.promise(async () => {
+        await fs.mkdir(path.dirname(target), { recursive: true })
+        await fs.writeFile(target, file.content, "utf8")
+      })
       yield* Effect.log(`wrote ${target}`)
     }
     yield* Effect.log("eve-memory wiring complete — edit memory.ts to configure adapters and identity.")

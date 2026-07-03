@@ -37,12 +37,10 @@
     "removeComments": false,
     "plugins": [{ "name": "@effect/language-service" }],
     "paths": {
-      "@eve-memory/cli": ["./packages/cli/src/bin.js"],
-      "@eve-memory/cli/*": ["./packages/cli/src/*.js"],
-      "@eve-memory/cli/test/*": ["./packages/cli/test/*.js"],
       "eve-memory": ["./packages/core/src/index.js"],
       "eve-memory/*": ["./packages/core/src/*.js"],
-      "eve-memory/test/*": ["./packages/core/test/*.js"]
+      "eve-memory/test/*": ["./packages/core/test/*.js"],
+      "eve-memory-pg": ["./packages/adapter-pg/src/index.js"]
     }
   }
 }

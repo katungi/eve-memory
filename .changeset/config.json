@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@eve-memory/cli", "@eve-memory/adapter-pg"]
+  "ignore": []
 }
