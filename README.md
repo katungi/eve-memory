@@ -132,7 +132,7 @@ export default defineHook({
 });
 ```
 
-> Or generate all four files at once: `npx eve-memory init` (options: `--dir`, `--embedder gateway|stub`, `--model`, `--force`). Existing files are never overwritten without `--force`.
+> Or generate all four files at once: `npx eve-memory-cli init` (options: `--dir`, `--embedder gateway|stub`, `--model`, `--force`). Existing files are never overwritten without `--force`.
 
 ## The imperative API
 
@@ -177,8 +177,19 @@ defineMemory({
 | Adapter | Infra | Semantic recall | Working memory | Status |
 |---|---|---|---|---|
 | `inMemoryAdapter()` | none (process memory) | ✅ | ✅ | ✅ available |
+| `pgMemoryAdapter()` | Postgres + pgvector | ✅ | ✅ | ✅ available — [`eve-memory-pg`](packages/adapter-pg) |
 | `sandboxFs()` | none (eve sandbox FS) | ✅ | ✅ | planned |
-| pgvector | Postgres + pgvector | ✅ | ✅ | planned (separate package) |
+
+```ts
+import { pgMemoryAdapter } from "eve-memory-pg";
+
+adapter: pgMemoryAdapter({
+  connectionString: process.env.DATABASE_URL!,
+  dimensions: 1536, // match your embedding model
+}),
+```
+
+`pgMemoryAdapter` also accepts any `{ query }` client (pg `Pool`, Neon serverless, PGlite), runs an idempotent migration at startup, and searches with pgvector cosine distance.
 
 Embedders:
 
@@ -199,8 +210,9 @@ This is a pnpm + Effect monorepo:
 
 ```
 packages/
-├── core/   →  the published `eve-memory` package (services, in-memory adapter, defineMemory)
-└── cli/    →  the `eve-memory init` codegen (work in progress)
+├── core/        →  `eve-memory` (services, adapters, defineMemory)
+├── adapter-pg/  →  `eve-memory-pg` (Postgres/pgvector adapter)
+└── cli/         →  `eve-memory-cli` (the `init` codegen)
 ```
 
 ```bash
@@ -215,10 +227,10 @@ pnpm typecheck
 - [x] Core services, in-memory adapter, Promise API, eve wiring
 - [x] Validation against eve's published types (`SessionAuth`, contexts, events) + identity diagnostics
 - [x] Real embedder (`gatewayEmbedder` via the AI SDK / AI Gateway)
-- [x] `npx eve-memory init` codegen
-- [ ] Smoke test against a deployed eve agent
-- [ ] Postgres/pgvector adapter (separate package)
+- [x] `npx eve-memory-cli init` codegen
+- [x] Postgres/pgvector adapter (`eve-memory-pg`, tested against real pgvector SQL via PGlite)
 - [ ] Publish `0.1.0`
+- [ ] Smoke test against a deployed eve agent
 
 ## License
 

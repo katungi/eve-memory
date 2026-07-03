@@ -1,14 +1,18 @@
 {
-  "name": "@eve-memory/cli",
-  "version": "0.0.0",
-  "private": true,
+  "name": "eve-memory-cli",
+  "version": "0.0.1",
   "type": "module",
   "license": "MIT",
-  "description": "Codegen CLI for eve-memory",
+  "description": "Codegen CLI for eve-memory — generates the eve agent wiring files",
   "repository": {
     "type": "git",
     "url": "<PLACEHOLDER>",
     "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist",
+    "executableFiles": ["./dist/esm/bin.js"]
   },
   "bin": {
     "eve-memory": "./dist/esm/bin.js"
