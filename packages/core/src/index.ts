@@ -1,6 +1,6 @@
 /** eve-memory — public API */
 
-export { EmbeddingError, MemoryStorageError } from "./errors.js"
+export { EmbeddingError, IdentityUnresolvedError, MemoryStorageError } from "./errors.js"
 export { Embedder, type EmbedderService, Memory, type MemoryService } from "./service.js"
 export type {
   MemoryEntry,
@@ -19,4 +19,4 @@ export {
   type SemanticRecallConfig,
   type WorkingMemoryConfig
 } from "./eve/define-memory.js"
-export type { EveContext } from "./eve/context.js"
+export type { EveContext, IdentitySource, ResolvedIdentity } from "./eve/context.js"

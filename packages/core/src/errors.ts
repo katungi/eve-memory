@@ -24,3 +24,13 @@ export class EmbeddingError extends Schema.TaggedError<EmbeddingError>()(
     return "Failed to embed text"
   }
 }
+
+export class IdentityUnresolvedError extends Schema.TaggedError<IdentityUnresolvedError>()(
+  "IdentityUnresolvedError",
+  {}
+) {
+  override get message(): string {
+    return "eve-memory could not resolve a user identity from ctx.session.auth and onUnresolvedIdentity is \"error\". "
+      + "Protect the route (see eve's auth & route protection) or configure `resource` in defineMemory."
+  }
+}

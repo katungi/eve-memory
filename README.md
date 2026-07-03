@@ -17,8 +17,8 @@ export default defineMemory({
 });
 ```
 
-> **Status:** early. The in-memory adapter is working and tested; a Postgres/pgvector adapter is coming as a separate package. APIs may change before `1.0`.
-> **Requires:** `eve >= 0.13.0`, Node `>= 24`.
+> **Status:** early but functional. The in-memory adapter, AI Gateway embedder, and `eve-memory init` codegen are working and tested — including type-level validation against the published `eve` package. A Postgres/pgvector adapter is coming as a separate package. APIs may change before `1.0`.
+> **Requires:** `eve >= 0.13.0`, Node `>= 24`. The gateway embedder needs `ai >= 7` (already present in every eve project).
 
 ---
 
@@ -61,29 +61,31 @@ agent/
 
 ```ts
 import { defineMemory } from "eve-memory";
-import { inMemoryAdapter, stubEmbedder } from "eve-memory/adapters";
+import { gatewayEmbedder, inMemoryAdapter } from "eve-memory/adapters";
 
 export default defineMemory({
   adapter: inMemoryAdapter(),       // swap for a pg adapter later — same API
-  embedder: stubEmbedder(),         // swap for a real embedder later
+  embedder: gatewayEmbedder({ model: "openai/text-embedding-3-small" }),
 
-  // Cross-session identity, resolved from eve's auth context.
-  // Defaults to the session initiator; override if your channel differs.
-  resource: (ctx) =>
-    ctx.session?.auth?.initiator?.principalId ?? "anonymous",
+  // Cross-session identity is resolved from eve's auth context automatically:
+  // session initiator → current caller → "anonymous" (with a logged warning).
+  // Unprotected eve agents expose both auth fields as null, so either protect
+  // the route, provide your own resolver, or fail loudly:
+  onUnresolvedIdentity: "error",    // or omit for the "anonymous" pool
 
   semanticRecall: { topK: 5, messageRange: 2, scope: "resource", threshold: 0.7 },
   workingMemory: { template: "- name:\n- preferences:\n- goals:" },
 });
 ```
 
+`gatewayEmbedder` uses the AI SDK, so gateway model ids authenticate through Vercel OIDC on Vercel (or `AI_GATEWAY_API_KEY` elsewhere) — the same rules as eve's `model` config. Use `stubEmbedder()` for offline development and tests.
+
 ### 2. Automatic injection — `agent/instructions/memory.ts`
 
-Runs at the start of every turn: pulls the user's working memory and the most relevant past context, and hands it to the model as a system message. (Injection must go through dynamic instructions — eve hooks are observe-only and cannot add model context.)
+Runs at the start of every turn: pulls the user's working memory and the most relevant past context, and hands it to the model as a system message. Dynamic instruction resolvers see the conversation history (`ctx.messages`), so `buildInjection` uses the latest user message as the recall query automatically. (Injection must go through dynamic instructions — eve hooks are observe-only and cannot add model context.)
 
 ```ts
-import { defineDynamic } from "eve/tools";
-import { defineInstructions } from "eve/instructions";
+import { defineDynamic, defineInstructions } from "eve/instructions";
 import memory from "../memory";
 
 export default defineDynamic({
@@ -115,21 +117,22 @@ export default defineTool({
 
 ### 4. Passive capture — `agent/hooks/memory.ts` (optional)
 
+`message.received` carries each normalized user message, so passive capture is one line:
+
 ```ts
 import { defineHook } from "eve/hooks";
 import memory from "../memory";
 
 export default defineHook({
   events: {
-    "turn.completed": async (event, ctx) => {
-      // Persist user turns automatically; shape to taste.
-      // await memory.save(ctx, extractUserText(event));
+    "message.received": async (event, ctx) => {
+      await memory.save(ctx, event.data.message);
     },
   },
 });
 ```
 
-> Coming soon: `npx eve-memory init` will generate these three files from your `memory.ts`, so you only ever edit one.
+> Or generate all four files at once: `npx eve-memory init` (options: `--dir`, `--embedder gateway|stub`, `--model`, `--force`). Existing files are never overwritten without `--force`.
 
 ## The imperative API
 
@@ -141,9 +144,10 @@ const hits = await memory.recall(ctx, "what languages does the user like");
 await memory.setWorkingMemory(ctx, { name: "Daniel", stack: ["Effect"] });
 const profile = await memory.getWorkingMemory(ctx);
 const block = await memory.buildInjection(ctx); // the system-message markdown
+memory.resolveIdentity(ctx);                    // { resourceId, threadId, source } — debug your auth wiring
 ```
 
-`ctx` is any eve tool/hook/resolver context — `eve-memory` reads `session.auth` from it to resolve the resource.
+`ctx` is any eve tool/hook/resolver context — `eve-memory` reads `session.auth` (and `messages`, when present) from it. `resolveIdentity` reports which source produced the resource id (`"initiator" | "current" | "resolver" | "anonymous"`), which is the first thing to check when validating a live agent.
 
 ## Configuration
 
@@ -151,7 +155,8 @@ const block = await memory.buildInjection(ctx); // the system-message markdown
 defineMemory({
   adapter,                        // a storage adapter (required)
   embedder,                       // an embedder (required)
-  resource?: (ctx) => string,     // identity resolver; defaults to session initiator
+  resource?: (ctx) => string,     // identity resolver; defaults to initiator → current → "anonymous"
+  onUnresolvedIdentity?: "anonymous" | "error", // default "anonymous" (warns once)
 
   semanticRecall?: {
     topK?: number,                // matches to retrieve (default 5)
@@ -174,6 +179,13 @@ defineMemory({
 | `inMemoryAdapter()` | none (process memory) | ✅ | ✅ | ✅ available |
 | `sandboxFs()` | none (eve sandbox FS) | ✅ | ✅ | planned |
 | pgvector | Postgres + pgvector | ✅ | ✅ | planned (separate package) |
+
+Embedders:
+
+| Embedder | Backing | Status |
+|---|---|---|
+| `gatewayEmbedder({ model })` | AI SDK → Vercel AI Gateway (or direct provider model objects) | ✅ available |
+| `stubEmbedder()` | deterministic token hashing (not semantic; dev/tests) | ✅ available |
 
 A custom adapter implements the `Memory` service. Internally adapters are Effect `Layer`s — but you only ever *pass* them, never author Effect to *use* the library. The `Memory` and `Embedder` tags are exported from `eve-memory/adapters` for advanced/custom use.
 
@@ -201,10 +213,11 @@ pnpm typecheck
 ## Roadmap
 
 - [x] Core services, in-memory adapter, Promise API, eve wiring
-- [ ] Live-agent validation (real `session.auth` shapes)
+- [x] Validation against eve's published types (`SessionAuth`, contexts, events) + identity diagnostics
+- [x] Real embedder (`gatewayEmbedder` via the AI SDK / AI Gateway)
+- [x] `npx eve-memory init` codegen
+- [ ] Smoke test against a deployed eve agent
 - [ ] Postgres/pgvector adapter (separate package)
-- [ ] Real embedder (via eve's AI Gateway)
-- [ ] `npx eve-memory init` codegen
 - [ ] Publish `0.1.0`
 
 ## License

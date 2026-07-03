@@ -1,6 +1,6 @@
 {
   "name": "eve-memory",
-  "version": "0.0.1", 
+  "version": "0.0.1",
   "type": "module",
   "license": "MIT",
   "description": "Cross-session memory layer for the Vercel eve agent framework",
@@ -27,12 +27,20 @@
     "effect": "catalog:"
   },
   "peerDependencies": {
+    "ai": "^7.0.0",
     "eve": ">=0.13.0",
     "zod": "^3 || ^4"
   },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
+  },
   "effect": {
     "generateExports": {
-      "include": ["adapters.ts"]
+      "include": [
+        "adapters.ts"
+      ]
     }
   },
   "exports": {
@@ -47,5 +55,10 @@
       "import": "./dist/esm/adapters.js",
       "default": "./dist/cjs/adapters.js"
     }
+  },
+  "devDependencies": {
+    "ai": "^7.0.14",
+    "eve": "^0.19.0",
+    "zod": "^4.4.3"
   }
 }
