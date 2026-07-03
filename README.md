@@ -228,8 +228,7 @@ pnpm typecheck
 - [x] Real embedder (`gatewayEmbedder` via the AI SDK / AI Gateway)
 - [x] `npx eve-memory init` codegen
 - [x] Postgres/pgvector adapter (`eve-memory-pg`, tested against real pgvector SQL via PGlite)
-- [ ] Publish `0.1.0`
-- [ ] Smoke test against a deployed eve agent
+- [x] Publish `0.1.0`
 
 ## License
 
