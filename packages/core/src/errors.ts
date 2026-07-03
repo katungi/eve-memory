@@ -1,5 +1,26 @@
-/** errors — MemoryError, EmbeddingError, ValidationError (Schema.TaggedError) */
+/** errors — tagged errors for the memory and embedder services */
 
-export type MemoryError = { readonly _tag: "MemoryError" }
-export type EmbeddingError = { readonly _tag: "EmbeddingError" }
-export type ValidationError = { readonly _tag: "ValidationError" }
+import { Schema } from "effect"
+
+export class MemoryStorageError extends Schema.TaggedError<MemoryStorageError>()(
+  "MemoryStorageError",
+  {
+    operation: Schema.Literal("store", "search", "remove", "getWorkingMemory", "setWorkingMemory"),
+    cause: Schema.Defect
+  }
+) {
+  override get message(): string {
+    return `Memory storage failed during ${this.operation}`
+  }
+}
+
+export class EmbeddingError extends Schema.TaggedError<EmbeddingError>()(
+  "EmbeddingError",
+  {
+    cause: Schema.Defect
+  }
+) {
+  override get message(): string {
+    return "Failed to embed text"
+  }
+}

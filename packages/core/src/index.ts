@@ -1,7 +1,22 @@
 /** eve-memory — public API */
 
-export type { MemoryError, EmbeddingError, ValidationError } from "./errors.js"
-export { Memory, Embedder, type MemoryService, type EmbedderService } from "./service.js"
-export type { MemoryId, MemoryEntry, MemorySearchResult, StoreMemoryInput } from "./types.js"
-export { defineMemory, type DefineMemoryOptions, type MemoryDefinition } from "./eve/define-memory.js"
-export { emptyEveMemoryContext, type EveMemoryContext } from "./eve/context.js"
+export { EmbeddingError, MemoryStorageError } from "./errors.js"
+export { Embedder, type EmbedderService, Memory, type MemoryService } from "./service.js"
+export type {
+  MemoryEntry,
+  MemoryId,
+  MemorySearchResult,
+  Scope,
+  SearchMemoryInput,
+  StoreMemoryInput,
+  Vector,
+  WorkingMemoryKey
+} from "./types.js"
+export {
+  defineMemory,
+  type DefineMemoryConfig,
+  type MemoryInstance,
+  type SemanticRecallConfig,
+  type WorkingMemoryConfig
+} from "./eve/define-memory.js"
+export type { EveContext } from "./eve/context.js"

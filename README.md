@@ -70,7 +70,7 @@ export default defineMemory({
   // Cross-session identity, resolved from eve's auth context.
   // Defaults to the session initiator; override if your channel differs.
   resource: (ctx) =>
-    ctx.session.auth.initiator?.principalId ?? "anonymous",
+    ctx.session?.auth?.initiator?.principalId ?? "anonymous",
 
   semanticRecall: { topK: 5, messageRange: 2, scope: "resource", threshold: 0.7 },
   workingMemory: { template: "- name:\n- preferences:\n- goals:" },
