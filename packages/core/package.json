@@ -1,6 +1,6 @@
 {
   "name": "eve-memory",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
   "description": "Cross-session memory layer for the Vercel eve agent framework",
@@ -12,7 +12,9 @@
   "publishConfig": {
     "access": "public",
     "directory": "dist",
-    "executableFiles": ["./dist/esm/bin.js"]
+    "executableFiles": [
+      "./dist/esm/bin.js"
+    ]
   },
   "bin": {
     "eve-memory": "./dist/esm/bin.js"

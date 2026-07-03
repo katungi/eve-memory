@@ -1,6 +1,6 @@
 {
   "name": "eve-memory-pg",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
   "description": "Postgres/pgvector storage adapter for eve-memory",
